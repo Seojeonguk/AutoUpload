@@ -18,6 +18,9 @@ import datetime
 @api_view(['POST'])
 def githubReq(request):
     try:
+        print("hihi")
+        print(request.data)
+        print("hihi2")
         problemInfo = getProblemInfo(request)
 
         uploadGithub(problemInfo)
@@ -158,4 +161,8 @@ def uploadNotion(problemInfo):
 
     code = newPage.children.add_new(CodeBlock)
     code.language = problemInfo['language']
-    code.title = problemInfo['sourcecode']
+    sourcecode = problemInfo['sourcecode'].replace('    ','\t').split('\n')
+    for x in range(len(sourcecode)):
+      sourcecode[x] = sourcecode[x]+'\n'
+    sourcecode = '\t'.join(sourcecode)
+    code.title = sourcecode

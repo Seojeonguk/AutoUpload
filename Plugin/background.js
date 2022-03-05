@@ -1,66 +1,64 @@
 chrome.action.onClicked.addListener((tab) => {
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: dataload,
-  });
+    chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: dataload,
+    });
 });
 
 async function dataload() {
-  document.querySelectorAll("tbody tr").forEach((tr) => {
-    if (tr.childNodes[3].firstChild.innerText === "맞았습니다!!") {
-      let newTd = document.createElement("td");
-      let newBtn = document.createElement("button");
-      newBtn.innerText = "Upload";
-      newBtn.setAttribute("submissionNum", tr.firstChild.innerText);
-      newBtn.setAttribute("problemId", tr.childNodes[2].lastChild.innerText);
-      newBtn.onclick = function () {
-        var sourcecode;
+    var divPR = document.querySelector("div.pull-right");
 
-        var sourcecodeConn = new XMLHttpRequest();
-        var url = `https://www.acmicpc.net/source/${this.getAttribute(
-          "submissionNum"
-        )}`;
+    problemId = document.querySelectorAll("td a")[1].innerText;
+    sourcecode = document.querySelector("textarea").value;
+    
+    var body = {
+      problemId:problemId,
+      sourcecode:sourcecode
+    };
 
-        sourcecodeConn.open("GET", url, false);
-        sourcecodeConn.onreadystatechange = function () {
-          console.log(sourcecodeConn)
-          console.log(sourcecodeConn.responseText)
-          if (sourcecodeConn.readyState == 4 && sourcecodeConn.status == 200) {
-            let responseText = sourcecodeConn.responseText;
-
-            console.log(responseText)
-            let openTextarea = new RegExp("(<textarea[^>]*>)", "g");
-            let closeTextarea = new RegExp("(</textarea>)", "g");
-            
-            sourcecode = responseText
-              .split(openTextarea)[2]
-              .split(closeTextarea)[0];
-            sourcecode = sourcecode.replace(/&lt;/gi, "<");
-            sourcecode = sourcecode.replace(/&gt;/gi, ">");
-            sourcecode = sourcecode.replace(/&quot;/gi, '"');
-            sourcecode = sourcecode.replace(/&amp;/gi, "&");
-            sourcecode = sourcecode.replace(/    /gi, "\t");
-          }
+    var githubBtn = document.createElement("button");
+    githubBtn.innerText = "Github";
+    githubBtn.onclick = function () {
+        var githubConn = new XMLHttpRequest();
+        var url = "http://localhost:8000/upload/github";
+        githubConn.open("POST", url, false);
+        githubConn.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+        githubConn.onreadystatechange = function () {
+            console.log(githubConn.responseText);
         };
-
-        sourcecodeConn.send();
         
-        // var autouploadReq = new XMLHttpRequest();
-        // var url = `http://localhost:8000/upload/all`
+        githubConn.send(JSON.stringify(body));
+    };
 
-        // autouploadReq.open("POST", url, false);
-        // autouploadReq.onreadystatechange = function () {
-        //   console.log(autouploadReq.responseText);
-        // };
-        // var requestBody = {
-        //   problemId : this.getAttribute("problemId"),
-        //   sourcecode : sourcecode
-          
-        // }
-        // autouploadReq.send(requestBody);
+    var notionBtn = document.createElement("button");
+    notionBtn.innerText = "Notion";
+    notionBtn.onclick = function () {
+      var notionConn = new XMLHttpRequest();
+      var url = "http://localhost:8000/upload/notion";
+      notionConn.open("POST", url, false);
+      notionConn.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+      notionConn.onreadystatechange = function () {
+          console.log(notionConn.responseText);
       };
-      newTd.appendChild(newBtn);
-      tr.appendChild(newTd);
-    }
-  });
+      
+      notionConn.send(JSON.stringify(body));
+    };
+
+    var allBtn = document.createElement("button");
+    allBtn.innerText = "All";
+    allBtn.onclick = function () {
+      var allConn = new XMLHttpRequest();
+      var url = "http://localhost:8000/upload/all";
+      allConn.open("POST", url, false);
+      allConn.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+      allConn.onreadystatechange = function () {
+          console.log(allConn.responseText);
+      };
+      
+      allConn.send(JSON.stringify(body));
+    };
+
+    divPR.appendChild(githubBtn);
+    divPR.appendChild(notionBtn);
+    divPR.appendChild(allBtn);
 }
