@@ -7,3 +7,4 @@ Python/.env
 Python/__pycache__/**
 problem.txt
 autoupload_venv/**
+db.sqlite3
