@@ -12,7 +12,7 @@ async function dataload() {
       let newBtn = document.createElement("button");
       newBtn.innerText = "Upload";
       newBtn.setAttribute("submissionNum", tr.firstChild.innerText);
-      newBtn.setAttribute("problemNum", tr.childNodes[2].lastChild.innerText);
+      newBtn.setAttribute("problemId", tr.childNodes[2].lastChild.innerText);
       newBtn.onclick = function () {
         var sourcecode;
 
@@ -23,12 +23,15 @@ async function dataload() {
 
         sourcecodeConn.open("GET", url, false);
         sourcecodeConn.onreadystatechange = function () {
+          console.log(sourcecodeConn)
+          console.log(sourcecodeConn.responseText)
           if (sourcecodeConn.readyState == 4 && sourcecodeConn.status == 200) {
             let responseText = sourcecodeConn.responseText;
 
+            console.log(responseText)
             let openTextarea = new RegExp("(<textarea[^>]*>)", "g");
             let closeTextarea = new RegExp("(</textarea>)", "g");
-
+            
             sourcecode = responseText
               .split(openTextarea)[2]
               .split(closeTextarea)[0];
@@ -39,27 +42,22 @@ async function dataload() {
             sourcecode = sourcecode.replace(/    /gi, "\t");
           }
         };
-        74;
 
         sourcecodeConn.send();
+        
+        // var autouploadReq = new XMLHttpRequest();
+        // var url = `http://localhost:8000/upload/all`
 
-        var pom = document.createElement("a");
-        pom.setAttribute(
-          "href",
-          "data:text/plain;charset=utf-8," + encodeURIComponent(sourcecode)
-        );
-        pom.setAttribute(
-          "download",
-          `BOJ_${this.getAttribute("problemNum")}.txt`
-        );
-
-        if (document.createEvent) {
-          var event = document.createEvent("MouseEvents");
-          event.initEvent("click", true, true);
-          pom.dispatchEvent(event);
-        } else {
-          pom.click();
-        }
+        // autouploadReq.open("POST", url, false);
+        // autouploadReq.onreadystatechange = function () {
+        //   console.log(autouploadReq.responseText);
+        // };
+        // var requestBody = {
+        //   problemId : this.getAttribute("problemId"),
+        //   sourcecode : sourcecode
+          
+        // }
+        // autouploadReq.send(requestBody);
       };
       newTd.appendChild(newBtn);
       tr.appendChild(newTd);

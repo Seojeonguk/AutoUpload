@@ -1,3 +1,6 @@
 notion
-watchdog
 python-dotenv
+requests
+django
+djangorestframework
+django-dotenv

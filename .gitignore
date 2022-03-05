@@ -3,6 +3,7 @@ node_modules/**
 package-lock.json
 .env
 Python/.env
-__pycache__/**
+**/__pycache__/**
 Python/__pycache__/**
 problem.txt
+autoupload_venv/**
