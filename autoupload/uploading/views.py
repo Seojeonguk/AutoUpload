@@ -18,9 +18,6 @@ import datetime
 @api_view(['POST'])
 def githubReq(request):
     try:
-        print("hihi")
-        print(request.data)
-        print("hihi2")
         problemInfo = getProblemInfo(request)
 
         uploadGithub(problemInfo)
