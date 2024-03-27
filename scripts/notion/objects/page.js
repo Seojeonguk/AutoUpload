@@ -27,11 +27,11 @@ export const createPageProperty = (type, payload) => {
 /**
  * Create a date property.
  * @param {Object} param - Object containing the parameters for creating the date property
- * @param {Date} [param.start=new Date()] - The start date for the date property, defaults to the current date if not provided
+ * @param {Date} [param.start] - The start date for the date property, defaults to the current date if not provided
  * @param {Date|null} [param.end=null] - The end date for the date property, defaults to null if not provided
  * @returns {Object} - The created date property object
  */
-export const createDate = ({ start = new Date(), end = null }) => {
+export const createDate = ({ start, end = null }) => {
   return {
     [PROPERTY_TYPE.DATE]: {
       start,
@@ -52,10 +52,10 @@ export const createDate = ({ start = new Date(), end = null }) => {
 export const createMultiSelect = ({ selections = [] }) => {
   return {
     [PROPERTY_TYPE.MULTI_SELECT]: selections.map(
-      ({ color = SELECT_COLOR.DEFAULT, id = null, name }) => ({
-        id,
+      ({ color = SELECT_COLOR.DEFAULT, id, name }) => ({
+        // id,
         name,
-        color,
+        // color,
       })
     ),
   };
@@ -69,16 +69,12 @@ export const createMultiSelect = ({ selections = [] }) => {
  * @param {string} params.name - The name of the select option
  * @returns {Object} - The created select property object
  */
-export const createSelect = ({
-  color = SELECT_COLOR.DEFAULT,
-  id = null,
-  name,
-}) => {
+export const createSelect = ({ color = SELECT_COLOR.DEFAULT, id, name }) => {
   return {
     [PROPERTY_TYPE.SELECT]: {
-      color,
+      // color,
       name,
-      id,
+      // id,
     },
   };
 };

@@ -9,7 +9,7 @@ import { splitTextIntoChunks } from "../../util.js";
  * @returns {Object} - The created block object
  * @throws {Error} - If an unsupported block type is provided
  */
-export const createBlock = ({ type, payload }) => {
+export const createBlock = (type, payload) => {
   switch (type) {
     case BLOCK_TYPE.CODE:
       return createCode(payload);
@@ -40,7 +40,7 @@ export const createCode = ({ caption, text, language = LANGUAGES.Text }) => {
   return {
     type: BLOCK_TYPE.CODE,
     [BLOCK_TYPE.CODE]: {
-      caption: createRichTextArray(caption),
+      caption: caption && createRichTextArray(caption),
       rich_text: createRichTextArray(text),
       language,
     },
@@ -122,7 +122,7 @@ export const createRichText = ({
       strikethrough: annotations.strikethrough || false,
       underline: annotations.underline || false,
       code: annotations.code || false,
-      color: annotations.color || blockConstants.COLORS.DEFAULT,
+      color: annotations.color || COLORS.DEFAULT,
     },
     plain_text: text,
     href,

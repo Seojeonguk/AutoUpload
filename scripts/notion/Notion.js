@@ -1,6 +1,11 @@
 import * as Notion from "./constants.js";
+import { createPage } from "./endpoints/pages.js";
+import { createPageProperty } from "./objects/page.js";
+import { createBlock } from "./objects/block.js";
 import * as SolvedAC from "../solvedAC/SolvedAC.js";
 import * as Util from "../util.js";
+import { PROPERTY_TYPE } from "./objects/constants/pageConstants.js";
+import { BLOCK_TYPE } from "./objects/constants/blockConstants.js";
 
 /**
  * Dispatches an action with an optional payload to the appropriate handler function.
@@ -126,8 +131,60 @@ async function requestAndSaveAccessToken(payload) {
   return accessToken;
 }
 
-async function upload({ problemId, type, extension }, { title, level, tags }) {
-  // Add more..
+async function upload(
+  { problemId, type, extension, sourceCode },
+  { title, level, tags }
+) {
+  const data = {};
+
+  const databaseId = await Util.getChromeStorage("notionUploadedDatabaseId");
+  data["parent"] = { "database_id": databaseId };
+
+  const properties = {};
+  properties["title"] = createPageProperty(PROPERTY_TYPE.TITLE, {
+    text: title,
+  });
+
+  properties["info"] = createPageProperty(PROPERTY_TYPE.MULTI_SELECT, {
+    selections: [type, level, problemId].map((value) => ({
+      name: value,
+    })),
+  });
+  properties["tags"] = createPageProperty(PROPERTY_TYPE.MULTI_SELECT, {
+    selections: tags.map((tag) => ({
+      name: tag,
+    })),
+  });
+  properties["URL"] = createPageProperty(PROPERTY_TYPE.URL, {
+    url: `acmicpc.net/problem/${problemId}`,
+  });
+  properties["Date"] = createPageProperty(PROPERTY_TYPE.DATE, {
+    start: new Date(),
+  });
+  properties["mime"] = createPageProperty(PROPERTY_TYPE.SELECT, {
+    name: extension,
+  });
+
+  data["properties"] = properties;
+  const children = [];
+  children.push(
+    createBlock(BLOCK_TYPE.HEADING_LARGE, { text: "How to resolve?" })
+  );
+  children.push(createBlock(BLOCK_TYPE.PARAGRAPH, { text: "" }));
+  children.push(createBlock(BLOCK_TYPE.PARAGRAPH, { text: "" }));
+  children.push(createBlock(BLOCK_TYPE.HEADING_LARGE, { text: "Source Code" }));
+  children.push(
+    createBlock(BLOCK_TYPE.CODE, { text: sourceCode, language: "java" })
+  );
+
+  data["children"] = children;
+
+  const result = await createPage(data);
+  const message = result.public_url;
+  return {
+    ok: true,
+    message,
+  };
 }
 
 export { dispatch };
